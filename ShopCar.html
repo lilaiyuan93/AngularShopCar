@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="appModule">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="./css/bootstrap.css">
+    <style>
+        .blue{
+            background: lightblue;
+        }
+        .pink{
+            background: lightyellow;
+        }
+    </style>
+</head>
+<body>
+<!--让页面居中 栅格化布局 12列布局-->
+<div class="container" ng-controller="appCtrl">
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-bordered">
+                <caption class="h3 text-warning"></caption>
+                <tr>
+                    <th class="text-center">商品名称</th>
+                    <th class="text-center" ng-click="flag=!flag">商品价格</th>
+                    <th class="text-center">操作</th>
+                </tr>
+                <tr ng-repeat="item in products | orderBy : 'price':flag" class="text-center" ng-class="{true:'blue',false:'pink'}[$index%2==0]" >
+                    <td>{{item.name}}</td>
+                    <td>{{item.price | currency:'￥'}}</td>
+                    <td>
+                        <button class="btn btn-danger" ng-click="remove(item)">删除</button>
+                    </td>
+                </tr>
+                <tr >
+                    <td colspan="3" >
+                        <button class="btn btn-danger" ng-click="removeAll()">删除全部</button>
+                        总价{{totals() | currency:'￥'}}
+                        <select name="" id="" ng-model="co">
+                            <option value="{{c.val}}" ng-repeat="c in coast">{{c.name}}</option>
+
+                        </select>
+                        折后价{{totals()*co | currency:'￥'}}
+                    </td>
+                </tr>
+            </table>
+            <form role="form">
+                <div class="form-group">
+                    <label for="productName" class="control-label">商品名称</label>
+                    <input type="text" class="form-control" id="productName" ng-model="product.name">
+                </div>
+                <div class="form-group">
+                    <label for="productPrie" class="control-label">商品价格</label>
+                    <input type="text" class="form-control" id="productPrie" ng-model="product.price">
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary" ng-click="addProducts(product)">添加</button>
+                    <button type="reset" class="btn btn-danger" ng-click="reset()">重置</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+<script src="./js/angular.js"></script>
+<script>
+    var app=angular.module('appModule',[]);
+    app.controller('appCtrl',function ($scope) {
+        $scope.products = [
+                {name:'iphone8',price:'8888'},
+                {name:'iphone7',price:'7777'},
+                {name:'iphone6',price:'6666'},
+        ];
+        $scope.addProducts=function () {
+            if($scope.product.name &&$scope.product.price ){
+                $scope.products.unshift($scope.product);
+                $scope.product = {};
+            }
+
+        }
+        $scope.result=function () {
+            $scope.product={};
+        }
+        $scope.remove = function (product) {
+            $scope.products=$scope.products.filter(function (item) {
+                return item != product;
+            })
+        };
+        $scope.removeAll=function () {
+            $scope.products=[]
+        };
+        $scope.totals = function () {
+            var total = 0;
+            angular.forEach($scope.products, function (item) {
+                    total += item.price*1;
+            })
+            return total;
+        }
+        $scope.coast = [{name:'打一折',val:0.1},{name:'打五折',val:0.5}];
+        $scope.co = '0.5'
+
+
+    })
+</script>
